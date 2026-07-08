@@ -28,8 +28,9 @@ COPY composer.json ./
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
 
-# Copy the rest of the application
+# Copy the rest of the application (excluding .env)
 COPY . .
+RUN rm -f .env
 
 # Run production scripts
 RUN composer dump-autoload --optimize
