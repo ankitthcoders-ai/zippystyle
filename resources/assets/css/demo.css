@@ -4,8 +4,45 @@
 ******************************************************************************/
 
 .menu .app-brand.demo {
-  height: 64px;
-  margin-top: 12px;
+  height: 72px;
+  margin-top: 0;
+  padding-inline: 1.25rem;
+  overflow: hidden;
+}
+
+.menu .app-brand.demo .app-brand-link {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.app-brand .zippy-style-logo,
+.zippy-style-logo {
+  display: block !important;
+  width: auto !important;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.zippy-style-logo--icon {
+  height: 60px !important;
+  max-width: 64px !important;
+}
+
+.zippy-style-logo--auth {
+  height: 72px !important;
+  max-width: 220px !important;
+  margin-inline: auto;
+}
+
+.menu .app-brand-text.demo {
+  font-size: 1.15rem;
+  letter-spacing: -0.3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .app-brand-logo.demo svg {

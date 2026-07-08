@@ -8,39 +8,40 @@ use App\Models\SubCategory;
 use App\Models\Shop;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
+use App\Support\RoleAccess;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        $products = Product::where('user_id', Auth::id())->with('subCategory', 'shop')->paginate(10);
+        $products = RoleAccess::products()->with('subCategory', 'shop')->paginate(10);
+
         return view('content.products.index', compact('products'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         $categories = Category::all();
         $subCategories = SubCategory::where('status', 'active')->get();
-        $shops = Shop::where('user_id', Auth::id())->where('status', 'active')->get();
+        $shops = RoleAccess::shops()->where('status', 'active')->get();
+
         return view('content.form-layout.form-layouts-vertical', compact('categories', 'subCategories', 'shops'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StoreProductRequest $request)
     {
         $validated = $request->validated();
         $validated['user_id'] = Auth::id();
         $validated['slug'] = Str::slug($request->name);
+
+        if (!RoleAccess::isAdmin()) {
+            $shop = Shop::where('id', $request->shop_id)->where('user_id', Auth::id())->first();
+            if (!$shop) {
+                return back()->withInput()->with('error', 'Invalid shop selected.');
+            }
+        }
 
         if ($request->hasFile('image')) {
             $validated['image'] = $request->file('image')->store('products', 'public');
@@ -51,36 +52,55 @@ class ProductController extends Controller
         return redirect()->route('products.index')->with('success', 'Product added successfully!');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Product $product)
     {
-        //
+        RoleAccess::authorizeProduct($product);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Product $product)
     {
-        //
+        RoleAccess::authorizeProduct($product);
+        $product->load('subCategory');
+
+        $categories = Category::all();
+        $subCategories = SubCategory::where('status', 'active')->get();
+        $shops = RoleAccess::shops()->where('status', 'active')->get();
+
+        return view('content.products.edit', compact('product', 'categories', 'subCategories', 'shops'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(UpdateProductRequest $request, Product $product)
     {
-        //
+        RoleAccess::authorizeProduct($product);
+
+        $validated = $request->validated();
+        unset($validated['category_id']);
+
+        if ($request->filled('name')) {
+            $validated['slug'] = Str::slug($request->name);
+        }
+
+        if (!RoleAccess::isAdmin() && $request->filled('shop_id')) {
+            $shop = Shop::where('id', $request->shop_id)->where('user_id', Auth::id())->first();
+            if (!$shop) {
+                return back()->withInput()->with('error', 'Invalid shop selected.');
+            }
+        }
+
+        if ($request->hasFile('image')) {
+            $validated['image'] = $request->file('image')->store('products', 'public');
+        }
+
+        $product->update($validated);
+
+        return redirect()->route('products.index')->with('success', 'Product updated successfully!');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Product $product)
     {
+        RoleAccess::authorizeProduct($product);
         $product->delete();
+
         return redirect()->route('products.index')->with('success', 'Product deleted successfully!');
     }
 }

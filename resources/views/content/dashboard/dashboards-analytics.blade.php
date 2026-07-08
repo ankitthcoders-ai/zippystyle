@@ -11,6 +11,9 @@
 @endsection
 
 @section('page-script')
+<script>
+window.dashboardStats = @json($chartData);
+</script>
 @vite('resources/assets/js/dashboards-analytics.js')
 @endsection
 
@@ -21,10 +24,10 @@
             <div class="d-flex align-items-start row">
                 <div class="col-sm-7">
                     <div class="card-body">
-                        <h5 class="card-title text-primary mb-3">Congratulations John! 🎉</h5>
-                        <p class="mb-6">You have done 72% more sales today.<br />Check your new badge in your profile.</p>
+                        <h5 class="card-title text-primary mb-3">Welcome back, {{ $stats['user_name'] }}! 🎉</h5>
+                        <p class="mb-6">You are logged in as <strong>{{ $stats['role_label'] }}</strong>.<br />You have <strong>{{ $stats['total_orders'] }}</strong> orders and <strong>₹{{ number_format($stats['total_revenue'], 2) }}</strong> in sales.</p>
 
-                        <a href="javascript:;" class="btn btn-sm btn-outline-primary">View Badges</a>
+                        <a href="{{ route('products.index') }}" class="btn btn-sm btn-outline-primary">View Products</a>
                     </div>
                 </div>
                 <div class="col-sm-5 text-center text-sm-left">
@@ -54,9 +57,12 @@
                                 </div>
                             </div>
                         </div>
-                        <p class="mb-1">Profit</p>
-                        <h4 class="card-title mb-3">$12,628</h4>
-                        <small class="text-success fw-medium"><i class="icon-base bx bx-up-arrow-alt"></i> +72.80%</small>
+                        <p class="mb-1">Total Revenue</p>
+                        <h4 class="card-title mb-3">₹{{ number_format($stats['total_revenue'], 2) }}</h4>
+                        <small class="text-{{ $stats['revenue_growth'] >= 0 ? 'success' : 'danger' }} fw-medium">
+                            <i class="icon-base bx bx-{{ $stats['revenue_growth'] >= 0 ? 'up' : 'down' }}-arrow-alt"></i>
+                            {{ $stats['revenue_growth'] >= 0 ? '+' : '' }}{{ $stats['revenue_growth'] }}%
+                        </small>
                     </div>
                 </div>
             </div>
@@ -77,9 +83,12 @@
                                 </div>
                             </div>
                         </div>
-                        <p class="mb-1">Sales</p>
-                        <h4 class="card-title mb-3">$4,679</h4>
-                        <small class="text-success fw-medium"><i class="icon-base bx bx-up-arrow-alt"></i> +28.42%</small>
+                        <p class="mb-1">Total Orders</p>
+                        <h4 class="card-title mb-3">{{ number_format($stats['total_orders']) }}</h4>
+                        <small class="text-{{ $stats['orders_growth'] >= 0 ? 'success' : 'danger' }} fw-medium">
+                            <i class="icon-base bx bx-{{ $stats['orders_growth'] >= 0 ? 'up' : 'down' }}-arrow-alt"></i>
+                            {{ $stats['orders_growth'] >= 0 ? '+' : '' }}{{ $stats['orders_growth'] }}%
+                        </small>
                     </div>
                 </div>
             </div>
@@ -128,7 +137,7 @@
                         </div>
 
                         <div id="growthChart"></div>
-                        <div class="text-center fw-medium my-6">62% Company Growth</div>
+                        <div class="text-center fw-medium my-6">{{ number_format($chartData['growthPercent'], 0) }}% Revenue Growth</div>
 
                         <div class="d-flex gap-11 justify-content-between">
                             <div class="d-flex">
@@ -136,12 +145,8 @@
                                     <span class="avatar-initial rounded-2 bg-label-primary"><i class="icon-base bx bx-dollar icon-lg text-primary"></i></span>
                                 </div>
                                 <div class="d-flex flex-column">
-                                    <small>
-                                        <script>
-                                        document.write(new Date().getFullYear() - 1);
-                                        </script>
-                                    </small>
-                                    <h6 class="mb-0">$32.5k</h6>
+                                    <small>This Month</small>
+                                    <h6 class="mb-0">₹{{ number_format($stats['month_revenue'], 2) }}</h6>
                                 </div>
                             </div>
                             <div class="d-flex">
@@ -149,12 +154,8 @@
                                     <span class="avatar-initial rounded-2 bg-label-info"><i class="icon-base bx bx-wallet icon-lg text-info"></i></span>
                                 </div>
                                 <div class="d-flex flex-column">
-                                    <small>
-                                        <script>
-                                        document.write(new Date().getFullYear() - 2);
-                                        </script>
-                                    </small>
-                                    <h6 class="mb-0">$41.2k</h6>
+                                    <small>Today</small>
+                                    <h6 class="mb-0">₹{{ number_format($stats['today_revenue'], 2) }}</h6>
                                 </div>
                             </div>
                         </div>
@@ -183,9 +184,9 @@
                                 </div>
                             </div>
                         </div>
-                        <p class="mb-1">Payments</p>
-                        <h4 class="card-title mb-3">$2,456</h4>
-                        <small class="text-danger fw-medium"><i class="icon-base bx bx-down-arrow-alt"></i> -14.82%</small>
+                        <p class="mb-1">Today's Sales</p>
+                        <h4 class="card-title mb-3">₹{{ number_format($stats['today_revenue'], 2) }}</h4>
+                        <small class="text-success fw-medium"><i class="icon-base bx bx-up-arrow-alt"></i> {{ $stats['today_orders'] }} orders today</small>
                     </div>
                 </div>
             </div>
@@ -206,9 +207,9 @@
                                 </div>
                             </div>
                         </div>
-                        <p class="mb-1">Transactions</p>
-                        <h4 class="card-title mb-3">$14,857</h4>
-                        <small class="text-success fw-medium"><i class="icon-base bx bx-up-arrow-alt"></i> +28.14%</small>
+                        <p class="mb-1">Products Sold</p>
+                        <h4 class="card-title mb-3">{{ number_format($stats['items_sold']) }}</h4>
+                        <small class="text-success fw-medium"><i class="icon-base bx bx-box"></i> {{ number_format($stats['total_products']) }} products listed</small>
                     </div>
                 </div>
             </div>
@@ -218,12 +219,12 @@
                         <div class="d-flex justify-content-between align-items-center flex-sm-row flex-column gap-10 flex-wrap">
                             <div class="d-flex flex-sm-column flex-row align-items-start justify-content-between">
                                 <div class="card-title mb-6">
-                                    <h5 class="text-nowrap mb-1">Profile Report</h5>
-                                    <span class="badge bg-label-warning">YEAR 2022</span>
+                                    <h5 class="text-nowrap mb-1">Sales Report</h5>
+                                    <span class="badge bg-label-warning">{{ now()->format('Y') }}</span>
                                 </div>
                                 <div class="mt-sm-auto">
-                                    <span class="text-success text-nowrap fw-medium"><i class="icon-base bx bx-up-arrow-alt"></i> 68.2%</span>
-                                    <h4 class="mb-0">$84,686k</h4>
+                                    <span class="text-success text-nowrap fw-medium"><i class="icon-base bx bx-up-arrow-alt"></i> {{ $stats['revenue_growth'] }}%</span>
+                                    <h4 class="mb-0">₹{{ number_format($stats['month_revenue'], 2) }}</h4>
                                 </div>
                             </div>
                             <div id="profileReportChart"></div>
@@ -241,7 +242,7 @@
             <div class="card-header d-flex justify-content-between">
                 <div class="card-title mb-0">
                     <h5 class="mb-1 me-2">Order Statistics</h5>
-                    <p class="card-subtitle">42.82k Total Sales</p>
+                    <p class="card-subtitle">{{ number_format($stats['total_orders']) }} Total Orders</p>
                 </div>
                 <div class="dropdown">
                     <button class="btn text-body-secondary p-0" type="button" id="orederStatistics" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -257,68 +258,34 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center mb-6">
                     <div class="d-flex flex-column align-items-center gap-1">
-                        <h3 class="mb-1">8,258</h3>
+                        <h3 class="mb-1">{{ number_format($stats['total_orders']) }}</h3>
                         <small>Total Orders</small>
                     </div>
                     <div id="orderStatisticsChart"></div>
                 </div>
                 <ul class="p-0 m-0">
-                    <li class="d-flex align-items-center mb-5">
+                    @forelse($categoryStats as $index => $category)
+                    @php
+                        $colors = ['primary', 'success', 'info', 'secondary'];
+                        $icons = ['bx-category', 'bx-closet', 'bx-home-alt', 'bx-football'];
+                    @endphp
+                    <li class="d-flex align-items-center {{ !$loop->last ? 'mb-5' : '' }}">
                         <div class="avatar flex-shrink-0 me-3">
-                            <span class="avatar-initial rounded bg-label-primary"><i class="icon-base bx bx-mobile-alt"></i></span>
+                            <span class="avatar-initial rounded bg-label-{{ $colors[$index % 4] }}"><i class="icon-base bx {{ $icons[$index % 4] }}"></i></span>
                         </div>
                         <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
                             <div class="me-2">
-                                <h6 class="mb-0">Electronic</h6>
-                                <small>Mobile, Earbuds, TV</small>
+                                <h6 class="mb-0">{{ $category->category_name }}</h6>
+                                <small>Category sales</small>
                             </div>
                             <div class="user-progress">
-                                <h6 class="mb-0">82.5k</h6>
+                                <h6 class="mb-0">{{ number_format($category->total) }}</h6>
                             </div>
                         </div>
                     </li>
-                    <li class="d-flex align-items-center mb-5">
-                        <div class="avatar flex-shrink-0 me-3">
-                            <span class="avatar-initial rounded bg-label-success"><i class="icon-base bx bx-closet"></i></span>
-                        </div>
-                        <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                            <div class="me-2">
-                                <h6 class="mb-0">Fashion</h6>
-                                <small>T-shirt, Jeans, Shoes</small>
-                            </div>
-                            <div class="user-progress">
-                                <h6 class="mb-0">23.8k</h6>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="d-flex align-items-center mb-5">
-                        <div class="avatar flex-shrink-0 me-3">
-                            <span class="avatar-initial rounded bg-label-info"><i class="icon-base bx bx-home-alt"></i></span>
-                        </div>
-                        <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                            <div class="me-2">
-                                <h6 class="mb-0">Decor</h6>
-                                <small>Fine Art, Dining</small>
-                            </div>
-                            <div class="user-progress">
-                                <h6 class="mb-0">849k</h6>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="d-flex align-items-center">
-                        <div class="avatar flex-shrink-0 me-3">
-                            <span class="avatar-initial rounded bg-label-secondary"><i class="icon-base bx bx-football"></i></span>
-                        </div>
-                        <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                            <div class="me-2">
-                                <h6 class="mb-0">Sports</h6>
-                                <small>Football, Cricket Kit</small>
-                            </div>
-                            <div class="user-progress">
-                                <h6 class="mb-0">99</h6>
-                            </div>
-                        </div>
-                    </li>
+                    @empty
+                    <li class="text-center text-muted py-4">No category sales yet.</li>
+                    @endforelse
                 </ul>
             </div>
         </div>
@@ -351,10 +318,10 @@
                             <div>
                                 <p class="mb-0">Total Balance</p>
                                 <div class="d-flex align-items-center">
-                                    <h6 class="mb-0 me-1">$459.10</h6>
+                                    <h6 class="mb-0 me-1">₹{{ number_format($stats['total_revenue'], 2) }}</h6>
                                     <small class="text-success fw-medium">
                                         <i class="icon-base bx bx-chevron-up icon-lg"></i>
-                                        42.9%
+                                        {{ $stats['revenue_growth'] }}%
                                     </small>
                                 </div>
                             </div>
@@ -366,7 +333,7 @@
                             </div>
                             <div>
                                 <h6 class="mb-0">Income this week</h6>
-                                <small>$39k less than last week</small>
+                                <small>₹{{ number_format(array_sum($chartData['weeklyRevenue']), 2) }} in last 7 days</small>
                             </div>
                         </div>
                     </div>
@@ -380,7 +347,7 @@
     <div class="col-md-6 col-lg-4 order-2 mb-6">
         <div class="card h-100">
             <div class="card-header d-flex align-items-center justify-content-between">
-                <h5 class="card-title m-0 me-2">Transactions</h5>
+                <h5 class="card-title m-0 me-2">Recent Orders</h5>
                 <div class="dropdown">
                     <button class="btn text-body-secondary p-0" type="button" id="transactionID" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="icon-base bx bx-dots-vertical-rounded icon-lg"></i>
@@ -394,96 +361,25 @@
             </div>
             <div class="card-body pt-4">
                 <ul class="p-0 m-0">
-                    <li class="d-flex align-items-center mb-6">
+                    @forelse($recentPurchases as $purchase)
+                    <li class="d-flex align-items-center {{ !$loop->last ? 'mb-6' : '' }}">
                         <div class="avatar flex-shrink-0 me-3">
-                            <img src="{{ asset('assets/img/icons/unicons/paypal.png') }}" alt="User" class="rounded" />
+                            <span class="avatar-initial rounded bg-label-primary"><i class="icon-base bx bx-receipt"></i></span>
                         </div>
                         <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
                             <div class="me-2">
-                                <small class="d-block">Paypal</small>
-                                <h6 class="fw-normal mb-0">Send money</h6>
+                                <small class="d-block">{{ $purchase->paymentMethod->name ?? 'Payment' }}</small>
+                                <h6 class="fw-normal mb-0">{{ $purchase->user->name ?? 'Customer' }}</h6>
                             </div>
                             <div class="user-progress d-flex align-items-center gap-2">
-                                <h6 class="fw-normal mb-0">+82.6</h6>
-                                <span class="text-body-secondary">USD</span>
+                                <h6 class="fw-normal mb-0">₹{{ number_format($purchase->total_paid_price, 2) }}</h6>
+                                <span class="text-body-secondary">{{ $purchase->created_at->format('d M') }}</span>
                             </div>
                         </div>
                     </li>
-                    <li class="d-flex align-items-center mb-6">
-                        <div class="avatar flex-shrink-0 me-3">
-                            <img src="{{ asset('assets/img/icons/unicons/wallet.png') }}" alt="User" class="rounded" />
-                        </div>
-                        <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                            <div class="me-2">
-                                <small class="d-block">Wallet</small>
-                                <h6 class="fw-normal mb-0">Mac'D</h6>
-                            </div>
-                            <div class="user-progress d-flex align-items-center gap-2">
-                                <h6 class="fw-normal mb-0">+270.69</h6>
-                                <span class="text-body-secondary">USD</span>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="d-flex align-items-center mb-6">
-                        <div class="avatar flex-shrink-0 me-3">
-                            <img src="{{ asset('assets/img/icons/unicons/chart.png') }}" alt="User" class="rounded" />
-                        </div>
-                        <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                            <div class="me-2">
-                                <small class="d-block">Transfer</small>
-                                <h6 class="fw-normal mb-0">Refund</h6>
-                            </div>
-                            <div class="user-progress d-flex align-items-center gap-2">
-                                <h6 class="fw-normal mb-0">+637.91</h6>
-                                <span class="text-body-secondary">USD</span>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="d-flex align-items-center mb-6">
-                        <div class="avatar flex-shrink-0 me-3">
-                            <img src="{{ asset('assets/img/icons/unicons/cc-primary.png') }}" alt="User" class="rounded" />
-                        </div>
-                        <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                            <div class="me-2">
-                                <small class="d-block">Credit Card</small>
-                                <h6 class="fw-normal mb-0">Ordered Food</h6>
-                            </div>
-                            <div class="user-progress d-flex align-items-center gap-2">
-                                <h6 class="fw-normal mb-0">-838.71</h6>
-                                <span class="text-body-secondary">USD</span>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="d-flex align-items-center mb-6">
-                        <div class="avatar flex-shrink-0 me-3">
-                            <img src="{{ asset('assets/img/icons/unicons/wallet.png') }}" alt="User" class="rounded" />
-                        </div>
-                        <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                            <div class="me-2">
-                                <small class="d-block">Wallet</small>
-                                <h6 class="fw-normal mb-0">Starbucks</h6>
-                            </div>
-                            <div class="user-progress d-flex align-items-center gap-2">
-                                <h6 class="fw-normal mb-0">+203.33</h6>
-                                <span class="text-body-secondary">USD</span>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="d-flex align-items-center">
-                        <div class="avatar flex-shrink-0 me-3">
-                            <img src="{{ asset('assets/img/icons/unicons/cc-warning.png') }}" alt="User" class="rounded" />
-                        </div>
-                        <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                            <div class="me-2">
-                                <small class="d-block">Mastercard</small>
-                                <h6 class="fw-normal mb-0">Ordered Food</h6>
-                            </div>
-                            <div class="user-progress d-flex align-items-center gap-2">
-                                <h6 class="fw-normal mb-0">-92.45</h6>
-                                <span class="text-body-secondary">USD</span>
-                            </div>
-                        </div>
-                    </li>
+                    @empty
+                    <li class="text-center text-muted py-4">No orders yet.</li>
+                    @endforelse
                 </ul>
             </div>
         </div>

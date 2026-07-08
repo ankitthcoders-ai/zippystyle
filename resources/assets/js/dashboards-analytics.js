@@ -5,6 +5,18 @@
 'use strict';
 
 document.addEventListener('DOMContentLoaded', function (e) {
+  const stats = window.dashboardStats || {};
+  const monthLabels = stats.monthLabels || ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'];
+  const monthlyRevenue = stats.monthlyRevenue || [0, 0, 0, 0, 0, 0, 0];
+  const monthlyOrders = stats.monthlyOrders || [0, 0, 0, 0, 0, 0, 0];
+  const weeklyRevenue = stats.weeklyRevenue || [0, 0, 0, 0, 0, 0, 0];
+  const weeklyLabels = stats.weeklyLabels || ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+  const categoryLabels = stats.categoryLabels?.length ? stats.categoryLabels : ['No Data'];
+  const categoryTotals = stats.categoryTotals?.length ? stats.categoryTotals : [1];
+  const growthPercent = stats.growthPercent ?? 0;
+  const profileReportData = stats.profileReportData?.length ? stats.profileReportData : [0, 0, 0, 0, 0, 0];
+  const incomeChartData = stats.incomeChartData?.length ? stats.incomeChartData : [0, 0, 0, 0, 0, 0, 0];
+
   let cardColor, headingColor, legendColor, labelColor, shadeColor, borderColor, fontFamily;
   cardColor = config.colors.cardColor;
   headingColor = config.colors.headingColor;
@@ -112,12 +124,12 @@ document.addEventListener('DOMContentLoaded', function (e) {
     totalRevenueChartOptions = {
       series: [
         {
-          name: new Date().getFullYear() - 1,
-          data: [18, 7, 15, 29, 18, 12, 9]
+          name: 'Revenue',
+          data: monthlyRevenue
         },
         {
-          name: new Date().getFullYear() - 2,
-          data: [-13, -18, -9, -14, -8, -17, -15]
+          name: 'Orders',
+          data: monthlyOrders
         }
       ],
       chart: {
@@ -181,7 +193,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
         opacity: [1, 1]
       },
       xaxis: {
-        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+        categories: monthLabels,
         labels: {
           style: {
             fontSize: '13px',
@@ -350,7 +362,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
   // --------------------------------------------------------------------
   const growthChartEl = document.querySelector('#growthChart'),
     growthChartOptions = {
-      series: [78],
+      series: [Math.min(Math.max(growthPercent, 0), 100)],
       labels: ['Growth'],
       chart: {
         height: 200,
@@ -471,14 +483,14 @@ document.addEventListener('DOMContentLoaded', function (e) {
       },
       series: [
         {
-          data: [40, 95, 60, 45, 90, 50, 75]
+          data: weeklyRevenue
         }
       ],
       legend: {
         show: false
       },
       xaxis: {
-        categories: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
+        categories: weeklyLabels,
         axisBorder: {
           show: false
         },
@@ -542,7 +554,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
       },
       series: [
         {
-          data: [110, 270, 145, 245, 205, 285]
+          data: profileReportData
         }
       ],
       xaxis: {
@@ -618,8 +630,8 @@ document.addEventListener('DOMContentLoaded', function (e) {
         type: 'donut',
         offsetX: 15
       },
-      labels: ['Electronic', 'Sports', 'Decor', 'Fashion'],
-      series: [50, 85, 25, 40],
+      labels: categoryLabels,
+      series: categoryTotals,
       colors: [config.colors.success, config.colors.primary, config.colors.secondary, config.colors.info],
       stroke: {
         width: 5,
@@ -694,7 +706,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
     incomeChartConfig = {
       series: [
         {
-          data: [21, 30, 22, 42, 26, 35, 29]
+          data: incomeChartData
         }
       ],
       chart: {
@@ -759,7 +771,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
         }
       },
       xaxis: {
-        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+        categories: monthLabels,
         axisBorder: {
           show: false
         },
@@ -792,7 +804,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
   // --------------------------------------------------------------------
   const weeklyExpensesEl = document.querySelector('#expensesOfWeek'),
     weeklyExpensesConfig = {
-      series: [65],
+      series: [Math.min(Math.max(Math.round(weeklyRevenue.reduce((a, b) => a + b, 0) / 1000), 0), 100) || 1],
       chart: {
         width: 60,
         height: 60,

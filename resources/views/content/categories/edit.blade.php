@@ -30,16 +30,7 @@
                         @enderror
                     </div>
 
-                    <div class="mb-4">
-                        <label class="form-label" for="image">Image</label>
-                        @if($category->image)
-                            <img src="{{ asset('storage/' . $category->image) }}" width="100" class="mb-2">
-                        @endif
-                        <input type="file" name="image" id="image" class="form-control @error('image') is-invalid @enderror" accept="image/*">
-                        @error('image')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
+                    @include('_partials.image-upload', ['name' => 'image', 'label' => 'Category Image', 'current' => $category->image])
 
                     <button type="submit" class="btn btn-primary">Update</button>
                 </form>
@@ -47,4 +38,5 @@
         </div>
     </div>
 </div>
+@include('_partials.image-preview-script')
 @endsection

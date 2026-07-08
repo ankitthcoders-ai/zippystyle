@@ -4,39 +4,7 @@
       "url": "/dashboard",
       "name": "Dashboard",
       "icon": "menu-icon icon-base bx bx-home-smile",
-      "slug": "dashboard",
-      "submenu": [
-        {
-          "url": "/dashboard",
-          "name": "Analytics",
-          "slug": "dashboard-analytics"
-        }
-      ]
-    },
-    {
-      "menuHeader": "Pages"
-    },
-    {
-      "name": "Authentication",
-      "icon": "menu-icon icon-base bx bx-lock-open-alt",
-      "slug": "auth",
-      "submenu": [
-        {
-          "url": "/auth/login-basic",
-          "name": "Login",
-          "slug": "auth-login-basic"
-        },
-        {
-          "url": "/auth/register-basic",
-          "name": "Register",
-          "slug": "auth-register-basic"
-        },
-        {
-          "url": "/auth/forgot-password-basic",
-          "name": "Forgot Password",
-          "slug": "auth-reset-password-basic"
-        }
-      ]
+      "slug": "dashboard-analytics"
     },
     {
       "name": "Account Settings",
@@ -61,42 +29,40 @@
       ]
     },
     {
-      "name": "Misc",
-      "icon": "menu-icon icon-base bx bx-cube-alt",
-      "slug": "pages-misc",
-      "submenu": [
-        {
-          "url": "/pages/misc-error",
-          "name": "Error",
-          "slug": "pages-misc-error"
-        },
-        {
-          "url": "/pages/misc-under-maintenance",
-          "name": "Under Maintenance",
-          "slug": "pages-misc-under-maintenance"
-        }
-      ]
-    },
-    {
       "menuHeader": "E-Commerce"
     },
     {
       "url": "/categories",
       "name": "Categories",
       "icon": "menu-icon icon-base bx bx-category",
-      "slug": "categories"
+      "slug": "categories",
+      "adminOnly": true
     },
     {
       "url": "/subcategories",
       "name": "Sub Categories",
       "icon": "menu-icon icon-base bx bx-category",
-      "slug": "subcategories"
+      "slug": "subcategories",
+      "adminOnly": true
     },
     {
       "url": "/shops",
       "name": "Shops",
       "icon": "menu-icon icon-base bx bx-store-alt",
       "slug": "shops"
+    },
+    {
+      "url": "/orders",
+      "name": "Orders",
+      "icon": "menu-icon icon-base bx bx-receipt",
+      "slug": "orders.index"
+    },
+    {
+      "url": "/payment-methods",
+      "name": "Payment Methods",
+      "icon": "menu-icon icon-base bx bx-credit-card",
+      "slug": "payment-methods",
+      "adminOnly": true
     },
     {
       "name": "Products",
@@ -114,69 +80,6 @@
           "slug": "form-layouts-vertical"
         }
       ]
-    },
-    {
-      "menuHeader": "Components"
-    },
-    {
-      "name": "Cards",
-      "icon": "menu-icon icon-base bx bx-collection",
-      "slug": "cards-basic",
-      "url": "/cards/basic"
-    },
-    {
-      "menuHeader": "Forms & Tables"
-    },
-    {
-      "name": "Form Validation",
-      "icon": "menu-icon icon-base bx bx-list-check",
-      "slug": "form-validation"
-    },
-    {
-      "name": "Form Elements",
-      "icon": "menu-icon icon-base bx bx-detail",
-      "slug": "forms",
-      "submenu": [
-        {
-          "url": "/forms/basic-inputs",
-          "name": "Basic Inputs",
-          "slug": "forms-basic-inputs"
-        },
-        {
-          "url": "/forms/input-groups",
-          "name": "Input groups",
-          "slug": "forms-input-groups"
-        }
-      ]
-    },
-    {
-      "url": "/tables/basic",
-      "icon": "menu-icon icon-base bx bx-table",
-      "name": "Tables",
-      "slug": "tables-basic"
-    },
-    {
-      "name": "Datatables",
-      "icon": "menu-icon icon-base bx bx-grid",
-      "slug": "tables-datatables"
-    },
-    {
-      "menuHeader": "Laravel"
-    },
-    {
-      "name": "Laravel Example",
-      "icon": "menu-icon icon-base bx bxl-php",
-      "slug": "laravel-example"
-    },
-    {
-      "name": "User Management",
-      "icon": "menu-icon icon-base bx bx-user",
-      "slug": "user-management"
-    },
-    {
-      "name": "Chat",
-      "icon": "menu-icon icon-base bx bx-chat",
-      "slug": "app-chat"
     }
   ]
 }

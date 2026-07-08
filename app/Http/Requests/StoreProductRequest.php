@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreProductRequest extends FormRequest
 {
@@ -23,6 +24,7 @@ class StoreProductRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
+            'gender' => 'required|string|in:male,female',
             'price' => 'required|numeric',
             'discount_price' => 'nullable|numeric',
             'quantity' => 'required|integer',
@@ -33,7 +35,14 @@ class StoreProductRequest extends FormRequest
             'material' => 'nullable|string|max:255',
             'color' => 'nullable|string|max:255',
             'description' => 'nullable|string',
-            'image' => 'nullable|file|mimes:jpeg,png,jpg,gif|max:10240',
+            'image' => 'nullable',
+            'image.*' => [
+                'nullable',
+                Rule::when(
+                    fn () => $this->hasFile('image') || is_array($this->file('image')),
+                    ['file', 'mimes:jpeg,png,jpg,gif,webp', 'max:10240']
+                ),
+            ],
             'video' => 'nullable|url',
             'category_id' => 'required|exists:categories,id',
             'sub_category_id' => 'required|exists:sub_categories,id',

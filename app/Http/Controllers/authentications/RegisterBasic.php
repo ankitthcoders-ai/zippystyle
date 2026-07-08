@@ -5,6 +5,7 @@ namespace App\Http\Controllers\authentications;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RegisterRequest;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 
@@ -64,6 +65,7 @@ class RegisterBasic extends Controller
         // Prepare user data
         $userData = $validated;
         $userData['password'] = Hash::make($request->password);
+        $userData['username'] = $request->filled('username') ? $request->username : $validated['email'];
         $userData['role'] = $validated['role'] ?? 'user';
         $userData['status'] = $validated['status'] ?? 'active';
         $userData['latitude'] = $validated['latitude'] ?? "7788879";
@@ -72,6 +74,8 @@ class RegisterBasic extends Controller
         // Create user
         $user = User::create($userData);
 
-        return redirect()->route('/')->with('success', 'Registration successful');
+        Auth::login($user);
+
+        return redirect()->route('dashboard-analytics')->with('success', 'Registration successful');
     }
 }

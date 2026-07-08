@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreShopRequest extends FormRequest
 {
@@ -15,6 +16,27 @@ class StoreShopRequest extends FormRequest
     }
 
     /**
+     * Normalize URL fields so users can enter values without a scheme.
+     */
+    protected function prepareForValidation(): void
+    {
+        $urlFields = ['website', 'facebook', 'twitter', 'instagram', 'linkedin'];
+        $updates = [];
+
+        foreach ($urlFields as $field) {
+            $value = trim((string) $this->input($field));
+
+            if ($value !== '' && ! preg_match('#^https?://#i', $value)) {
+                $updates[$field] = 'https://' . $value;
+            }
+        }
+
+        if ($updates !== []) {
+            $this->merge($updates);
+        }
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
@@ -24,7 +46,10 @@ class StoreShopRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'image' => 'nullable|file|mimes:jpeg,png,jpg,gif|max:10240',
+            'image' => [
+                'nullable',
+                Rule::when($this->hasFile('image'), ['file', 'mimes:jpeg,png,jpg,gif,webp', 'max:10240']),
+            ],
             'shop_number' => 'nullable|string|max:255',
             'gst_number' => 'nullable|string|max:255',
             'address' => 'required|string|max:255',

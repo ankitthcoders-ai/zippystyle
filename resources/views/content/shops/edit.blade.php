@@ -10,6 +10,20 @@
                 <h5 class="mb-0">Edit Shop</h5>
             </div>
             <div class="card-body">
+                @if(session('error'))
+                    <div class="alert alert-danger mb-4">{{ session('error') }}</div>
+                @endif
+
+                @if($errors->any())
+                    <div class="alert alert-danger mb-4">
+                        <ul class="mb-0">
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
                 <form id="formAuthentication" method="POST" action="{{ route('shops.update', $shop->id) }}" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
@@ -134,16 +148,7 @@
                         </div>
                     </div>
 
-                    <div class="mb-4">
-                        <label class="form-label" for="image">Image</label>
-                        @if($shop->image)
-                            <img src="{{ asset('storage/' . $shop->image) }}" width="100" class="mb-2">
-                        @endif
-                        <input type="file" name="image" id="image" class="form-control @error('image') is-invalid @enderror" accept="image/*">
-                        @error('image')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
+                    @include('_partials.image-upload', ['name' => 'image', 'label' => 'Shop Image', 'current' => $shop->image])
 
                     <div class="mb-4">
                         <label class="form-label" for="description">Description</label>
@@ -170,4 +175,5 @@
         </div>
     </div>
 </div>
+@include('_partials.image-preview-script')
 @endsection

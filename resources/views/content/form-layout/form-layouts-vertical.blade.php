@@ -32,14 +32,25 @@
                     @csrf
 
                     <div class="row mb-6">
-                        <div class="col-md-6 mb-4 mb-md-0">
+                        <div class="col-md-4 mb-4 mb-md-0">
                             <label class="form-label" for="name">Product Name</label>
                             <input type="text" name="name" id="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}" placeholder="Product Name" />
                             @error('name')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4 mb-4 mb-md-0">
+                            <label class="form-label" for="gender">Gender</label>
+                            <select name="gender" id="gender" class="form-select @error('gender') is-invalid @enderror">
+                                <option value="">Select Gender</option>
+                                <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>Male</option>
+                                <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>Female</option>
+                            </select>
+                            @error('gender')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="col-md-4">
                             <label class="form-label" for="sku">SKU</label>
                             <input type="text" name="sku" id="sku" class="form-control @error('sku') is-invalid @enderror" value="{{ old('sku') }}" placeholder="SKU" />
                             @error('sku')
@@ -165,13 +176,7 @@
                         </div>
                     </div>
 
-                    <div class="mb-6">
-                        <label class="form-label" for="image">Product Image</label>
-                        <input type="file" name="image" id="image" class="form-control @error('image') is-invalid @enderror" accept="image/*" />
-                        @error('image')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
+                    @include('_partials.image-upload', ['name' => 'image', 'label' => 'Product Image', 'wrapperClass' => 'mb-6'])
 
                     <div class="mb-6">
                         <label class="form-label" for="video">Video URL (Optional)</label>
@@ -219,4 +224,5 @@
         }
     });
 </script>
+@include('_partials.image-preview-script')
 @endsection

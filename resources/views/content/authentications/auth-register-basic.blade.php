@@ -15,9 +15,8 @@
                 <div class="card-body">
                     <!-- Logo -->
                     <div class="app-brand justify-content-center mb-6">
-                        <a href="{{ url('/') }}" class="app-brand-link gap-2">
-                            <span class="app-brand-logo demo">@include('_partials.macros')</span>
-                            <span class="app-brand-text demo text-heading fw-bold">{{ config('variables.templateName') }}</span>
+                        <a href="{{ url('/') }}" class="app-brand-link">
+                            @include('_partials.app-logo', ['variant' => 'auth'])
                         </a>
                     </div>
                     <!-- /Logo -->
@@ -60,12 +59,25 @@
                         </div>
                         <div class="row mb-6">
                             <div class="col-md-6">
+                                <label for="gender" class="form-label">Gender</label>
+                                <select class="form-select @error('gender') is-invalid @enderror" id="gender" name="gender" required>
+                                    <option value="">Select your gender</option>
+                                    <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>Male</option>
+                                    <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>Female</option>
+                                </select>
+                                @error('gender')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="col-md-6">
                                 <label for="email" class="form-label">Email</label>
                                 <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" placeholder="Enter your email" value="{{ old('email') }}" />
                                 @error('email')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
+                        </div>
+                        <div class="row mb-6">
                             <div class="col-md-6">
                                 <label for="phone" class="form-label">Phone</label>
                                 <input type="text" class="form-control @error('phone') is-invalid @enderror" id="phone" name="phone" placeholder="Enter your phone number" value="{{ old('phone') }}" />
@@ -182,11 +194,7 @@
 
                         <div class="row mb-6">
                             <div class="col-md-4">
-                                <label for="image" class="form-label">Profile Image</label>
-                                <input type="file" class="form-control @error('image') is-invalid @enderror" id="image" name="image" accept="image/*" />
-                                @error('image')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                                @include('_partials.image-upload', ['name' => 'image', 'label' => 'Profile Image', 'wrapperClass' => 'mb-0'])
                             </div>
                             <div class="col-md-4">
                                 <label for="adharcard" class="form-label">Aadhaar Card</label>
@@ -248,4 +256,5 @@ document.addEventListener('DOMContentLoaded', function() {
     countrySelect.addEventListener('change', toggleStateField);
 });
 </script>
+@include('_partials.image-preview-script')
 @endsection
