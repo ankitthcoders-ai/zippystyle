@@ -44,6 +44,10 @@ RUN rm -rf node_modules
 # Set permissions
 RUN chmod -R 775 storage bootstrap/cache
 
+# Copy start script and make executable
+COPY start.sh ./
+RUN chmod +x start.sh
+
 EXPOSE 8080
 
 ENTRYPOINT ["/app/start.sh"]
