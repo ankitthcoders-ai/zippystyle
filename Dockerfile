@@ -21,8 +21,8 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /app
 
-# Copy composer files first for layer caching
-COPY composer.json composer.lock ./
+# Copy composer file first for layer caching
+COPY composer.json ./
 
 # Install PHP dependencies (no scripts yet since app isn't fully copied)
 RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
