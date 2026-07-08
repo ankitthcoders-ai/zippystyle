@@ -37,7 +37,7 @@ COPY . .
 RUN composer dump-autoload --optimize
 
 # Install Node dependencies and build assets
-RUN npm ci && npm run build
+RUN npm install --legacy-peer-deps && npm run build
 
 # Remove node_modules after build (not needed at runtime)
 RUN rm -rf node_modules
