@@ -12,6 +12,7 @@ RUN apk add --no-cache \
     git \
     postgresql-dev \
     mariadb-dev \
+    onig-dev \
     $PHPIZE_DEPS
 
 # Install PHP extensions
