@@ -2,8 +2,6 @@ FROM php:8.4-fpm-alpine
 
 # Install system dependencies
 RUN apk add --no-cache \
-    nginx \
-    supervisor \
     nodejs \
     npm \
     zip \
@@ -27,13 +25,13 @@ WORKDIR /app
 # Copy composer file first for layer caching
 COPY composer.json ./
 
-# Install PHP dependencies (no scripts yet since app isn't fully copied)
+# Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
 
 # Copy the rest of the application
 COPY . .
 
-# Run production scripts (package discovery, etc.)
+# Run production scripts
 RUN composer dump-autoload --optimize
 
 # Install Node dependencies and build assets
@@ -42,16 +40,8 @@ RUN npm install --legacy-peer-deps && npm run build
 # Remove node_modules after build (not needed at runtime)
 RUN rm -rf node_modules
 
-# Configure nginx
-COPY docker/nginx.conf /etc/nginx/http.d/default.conf
-
-# Configure supervisord
-COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-
-# Create runtime directories and set permissions
-RUN mkdir -p /run/nginx && \
-    chmod -R 775 storage bootstrap/cache && \
-    chown -R www-data:www-data storage bootstrap/cache
+# Set permissions
+RUN chmod -R 775 storage bootstrap/cache
 
 EXPOSE 8080
 
