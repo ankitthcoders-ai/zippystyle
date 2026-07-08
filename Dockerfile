@@ -16,7 +16,7 @@ RUN apk add --no-cache \
     $PHPIZE_DEPS
 
 # Install PHP extensions
-RUN docker-php-ext-install pdo pdo_pgsql pdo_mysql mbstring sockets bcmath
+RUN docker-php-ext-install pdo pdo_pgsql pdo_mysql mbstring bcmath
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
